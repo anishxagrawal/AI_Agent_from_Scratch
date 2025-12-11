@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 from datetime import datetime
 from langchain_core.tools import tool
 
