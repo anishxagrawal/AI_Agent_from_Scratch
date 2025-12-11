@@ -1,105 +1,173 @@
-# AI_Agent — First AI Agent (Learning Project)
+# AI Research Assistant
 
-A minimal, beginner-friendly project that demonstrates how to wire a Python program to an LLM provider to build a simple "agent": send a prompt, receive a response, and handle basic errors.
+A simple Python tool that researches topics for you using Wikipedia and web search, then summarizes everything with AI.
 
-This repository is intended as a learning exercise for someone building their first AI agent: it shows virtual environment setup, dependency management, environment variables for API keys, and how to switch or fallback between providers.
+## What it does
 
-## What this project contains
-- `main.py`: Example agent code — constructs an LLM client (Anthropic `ChatAnthropic` by default), invokes the model with a prompt, and prints the response.
-- `requirements.txt`: Python dependencies used by the project.
-- `README.md`: (this file) setup, run instructions, and troubleshooting tips.
+Ask it a question, and it will:
+1. Check Wikipedia for background info
+2. Search the web for current information
+3. Use AI to combine everything into a clear answer
+4. Let you save the results to a file
 
-## Design overview (what the agent does)
-- The program loads environment variables (via `dotenv` if present).
-- It constructs an LLM client object and calls `invoke(...)` with a prompt.
-- The response is printed to the console. You can extend `main.py` to add reasoning loops, tools, or memory.
+## Setup
 
-## Prerequisites
-- Python 3.11 or newer
-- Git (optional, for version control and pushing to remotes)
+**1. Clone the repo**
+```bash
+git clone https://github.com/anishxagrawal/AI_Agent_from_Scratch.git
+cd AI_Agent_from_Scratch
+```
 
-## Setup (PowerShell)
-1. Create and activate a virtual environment:
-
-```powershell
+**2. Create a virtual environment**
+```bash
 python -m venv venv
+```
+
+**3. Activate it**
+
+Windows (PowerShell):
+```bash
 .\venv\Scripts\Activate.ps1
 ```
 
-2. Install dependencies:
+Mac/Linux:
+```bash
+source venv/bin/activate
+```
 
-```powershell
+**4. Install dependencies**
+```bash
 pip install -r requirements.txt
 ```
 
-If PowerShell blocks activation due to ExecutionPolicy, allow signed scripts for your user and re-run activation:
+**5. Get an API key**
 
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Get a free Groq API key from: https://console.groq.com/keys
+
+**6. Set your API key**
+
+Windows (PowerShell):
+```bash
+$env:GROQ_API_KEY = 'your-api-key-here'
 ```
 
-## Environment variables (API keys)
-Set the API keys the session will use. Example (session-only):
-
-```powershell
-$env:ANTHROPIC_API_KEY = 'sk-...'
-$env:OPENAI_API_KEY = 'sk-...'
-$env:GROQ_API_KEY = 'gsk_...'
+Mac/Linux:
+```bash
+export GROQ_API_KEY='your-api-key-here'
 ```
 
-To persist the keys for your Windows user:
-
-```powershell
-[System.Environment]::SetEnvironmentVariable('ANTHROPIC_API_KEY','sk-...','User')
-[System.Environment]::SetEnvironmentVariable('OPENAI_API_KEY','sk-...','User')
-[System.Environment]::SetEnvironmentVariable('GROQ_API_KEY','gsk_...','User')
+To make it permanent (Windows):
+```bash
+[System.Environment]::SetEnvironmentVariable('GROQ_API_KEY','your-key','User')
 ```
-
-Do not commit API keys into the repository.
 
 ## How to run
-With the virtual environment active, run:
-
-```powershell
-python .\main.py
+```bash
+python main.py
 ```
 
-You should see the model's response printed. If you're using Anthropic and receive a 400 error about credits, see Troubleshooting.
-
-## Troubleshooting & common issues
-- "Your credit balance is too low" (Anthropic 400 BadRequestError):
-  - Sign in to Anthropic Console → Billing to add credits or enable billing: https://console.anthropic.com/billing
-  - Alternatively, set `OPENAI_API_KEY` and switch `main.py` to `ChatOpenAI` or add a fallback.
-
-- Activation blocked by PowerShell ExecutionPolicy: use `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`.
-
-- To check environment variables in PowerShell:
-
-```powershell
-echo $env:ANTHROPIC_API_KEY
-echo $env:OPENAI_API_KEY
+Then just type what you want to research:
+```
+What can I help you research? history of the Eiffel Tower
 ```
 
-## Switching providers or adding a fallback
-- To use OpenAI instead of Anthropic, edit `main.py` to use `ChatOpenAI(model="gpt-4o-mini")` and ensure `OPENAI_API_KEY` is set.
-- A recommended development pattern is to catch provider-specific errors (like Anthropic billing errors) and optionally fall back to another provider if its API key is available.
+## Example
+```
+What can I help you research? capital of India
 
-## Git
-Add and commit the README (example):
+🔍 Step 1: Searching Wikipedia...
+✅ Wikipedia found!
 
-```powershell
-git add README.md
-git commit -m "Update README: project explanation and setup"
-git push
+🔍 Step 2: Searching the web...
+✅ Web search complete!
+
+🤖 Step 3: Generating answer...
+
+📊 RESEARCH RESULTS
+================================================================
+The capital of India is New Delhi. It serves as the seat of all 
+three branches of the Government of India. New Delhi was officially 
+declared as the capital in 1911, replacing Calcutta (now Kolkata)...
+
+💾 Would you like to save this research? (y/n):
 ```
 
-## Next steps (learning paths)
-- Extend `main.py` to implement a simple agent loop (prompt → action → observation → next prompt).
-- Add tools (web search, file I/O) and let the agent call them.
-- Add logging and tests for deterministic behavior.
+## Files
 
-If you want, I can patch `main.py` to add a safe fallback from Anthropic to OpenAI and include example code for that behavior.
+- `main.py` - Main program that runs the research workflow
+- `tools.py` - Search, Wikipedia, and file-saving tools
+- `requirements.txt` - Python packages needed
+
+## Troubleshooting
+
+**"ModuleNotFoundError"**
+- Make sure your virtual environment is activated
+- Run `pip install -r requirements.txt` again
+
+**"API key not found"**
+- Check that you set the `GROQ_API_KEY` environment variable
+- Try: `echo $env:GROQ_API_KEY` (Windows) or `echo $GROQ_API_KEY` (Mac/Linux)
+
+**PowerShell won't let you activate the venv**
+- Run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+- Then try activating again
+
+**Search isn't working**
+- DuckDuckGo search sometimes has rate limits
+- Wait a minute and try again
+
+## Using different AI models
+
+The code uses Groq (free), but you can switch to:
+
+**OpenAI** (paid but very reliable):
+```python
+from langchain_openai import ChatOpenAI
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+```
+Set: `$env:OPENAI_API_KEY = 'your-key'`
+
+**Google Gemini** (free):
+```python
+from langchain_google_genai import ChatGoogleGenerativeAI
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+```
+Get key from: https://aistudio.google.com/app/apikey
+Set: `$env:GOOGLE_API_KEY = 'your-key'`
+
+## How it works
+
+1. **User asks a question** → "What is quantum computing?"
+2. **Wikipedia tool** → Gets background information
+3. **Web search tool** → Gets current/additional info
+4. **AI synthesis** → Combines everything into a clear answer
+5. **Optional save** → Writes results to a text file
+
+No complex agent frameworks - just a simple, reliable workflow.
+
+## Tech stack
+
+- **LangChain** - For AI and tool integration
+- **Groq** - Fast, free AI inference (using Llama 3.3)
+- **DuckDuckGo** - Web search
+- **Wikipedia API** - Encyclopedia lookup
+
+## Future improvements
+
+- [ ] Add conversation history
+- [ ] Support follow-up questions
+- [ ] Add more sources (arXiv, news APIs)
+- [ ] Export to markdown/PDF
+- [ ] Add citations to sources
+
+## License
+
+MIT - do whatever you want with it
+
+## Contributing
+
+Found a bug? Have an idea? Open an issue or submit a PR!
 
 ---
-Edited to include a project overview, setup steps, run instructions, and troubleshooting for a beginner learning their first AI agent.
 
+Made while learning about AI agents and LangChain
