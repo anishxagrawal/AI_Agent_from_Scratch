@@ -1,6 +1,3 @@
-import warnings
-warnings.filterwarnings("ignore")
-
 from datetime import datetime
 from langchain_core.tools import tool
 
@@ -8,10 +5,7 @@ from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 
 
-# -------------------------
-# 1. SEARCH TOOL
-# -------------------------
-
+# web search tool using duckduckgo
 @tool
 def search(query: str) -> str:
     """Search the internet for current information, news, or recent developments.
@@ -30,10 +24,7 @@ def search(query: str) -> str:
         return f"Search error: {str(e)}"
 
 
-# -------------------------
-# 2. WIKIPEDIA TOOL
-# -------------------------
-
+# wikipedia lookup tool
 @tool
 def wikipedia(query: str) -> str:
     """Get encyclopedic information from Wikipedia about topics, history, and facts.
@@ -45,6 +36,7 @@ def wikipedia(query: str) -> str:
         Wikipedia article summary
     """
     try:
+        # limit to 500 chars to keep it concise
         wiki_api = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=500)
         result = wiki_api.run(query)
         return result if result else "No Wikipedia article found."
@@ -52,10 +44,7 @@ def wikipedia(query: str) -> str:
         return f"Wikipedia error: {str(e)}"
 
 
-# -------------------------
-# 3. SAVE-TO-FILE TOOL
-# -------------------------
-
+# file saving tool
 @tool
 def save_text_to_file(data: str, filename: str = "research_output.txt") -> str:
     """Save research findings to a text file.
@@ -69,8 +58,10 @@ def save_text_to_file(data: str, filename: str = "research_output.txt") -> str:
     """
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # add timestamp header to each save
         text = f"\n{'='*60}\n--- Research saved at {timestamp} ---\n{'='*60}\n{data}\n\n"
         
+        # append mode so multiple saves don't overwrite
         with open(filename, "a", encoding="utf-8") as f:
             f.write(text)
 

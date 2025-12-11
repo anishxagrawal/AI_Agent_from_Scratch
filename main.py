@@ -4,11 +4,13 @@ from tools import search, wikipedia, save_text_to_file
 
 load_dotenv()
 
+# using groq's llama model - temp=0 keeps responses consistent
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 def research(query: str):
-    """Research a topic using available tools"""
+    """runs the research workflow - wiki first, then web search, then synthesize"""
     
+    # try wikipedia first for background info
     print(f"🔍 Step 1: Searching Wikipedia for '{query}'...")
     try:
         wiki_result = wikipedia.invoke({"query": query})
@@ -17,6 +19,7 @@ def research(query: str):
         wiki_result = f"Wikipedia search failed: {e}"
         print(f"⚠️  Wikipedia error\n")
     
+    # get current info from web
     print(f"🔍 Step 2: Searching the web for '{query}'...")
     try:
         search_result = search.invoke({"query": query})
@@ -25,7 +28,7 @@ def research(query: str):
         search_result = f"Search failed: {e}"
         print(f"⚠️  Search error\n")
     
-    # Combine results and ask LLM to summarize
+    # have the LLM put it all together
     print("🤖 Step 3: Generating comprehensive answer...\n")
     prompt = f"""Based on the following information about "{query}", provide a clear, well-organized answer:
 
@@ -54,14 +57,17 @@ def main():
     print(f"\n{'='*70}\n")
     
     try:
+        # run the research
         result = research(query)
         
+        # show results
         print("="*70)
         print(" 📊 RESEARCH RESULTS ".center(70))
         print("="*70)
         print(f"\n{result}\n")
         print("="*70)
         
+        # ask if they want to save
         save_choice = input("\n💾 Would you like to save this research? (y/n): ").strip().lower()
         
         if save_choice == 'y':
@@ -71,6 +77,7 @@ def main():
             elif not filename.endswith('.txt'):
                 filename += '.txt'
             
+            # format the content nicely
             save_content = f"""RESEARCH TOPIC: {query}
 
 {result}
