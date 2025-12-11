@@ -1,5 +1,7 @@
-from langchain_community.tools import wikipediaQueryRun, DuckDuckGoSearchRun
-from langchain_community.utilities import wikipediaAPIWrapper
+from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_community.tools.wikipedia.tool import WikipediaQueryRun
+from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
+
 from langchain.tools import Tool
 from datetime import datetime
 
