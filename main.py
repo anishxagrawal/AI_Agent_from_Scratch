@@ -31,13 +31,19 @@ parser = PydanticOutputParser(pydantic_object=ResearchResponse)
 prompt = ChatPromptTemplate.from_messages(
     [
         (
-            "system",
+        "system",
             """
             You are a research assistant that will help generate a research paper.
-            Answer the user query and use neccessary tools. 
-            Wrap the output in this format and provide no other text\n{format_instructions}
-            """,
+            
+            You may ONLY use the tools provided in the 'tools' list.
+            DO NOT create or refer to any tool name that is not explicitly provided.
+            The only tool you have is: "search".
+
+            Wrap the output in the required Pydantic format:
+            {format_instructions}
+            """
         ),
+
         ("placeholder", "{chat_history}"),
         ("human", "{query}"),
         ("placeholder", "{agent_scratchpad}"),
@@ -55,7 +61,8 @@ agent = create_tool_calling_agent(
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 query = input("What can i help you Research? ")
-raw_response = agent_executor.invoke({"query": "What is the capital of France?"})
+
+raw_response = agent_executor.invoke({"query": query})
 # print(raw_response)
 
 structured_response = parser.parse(raw_response.get("output"))
